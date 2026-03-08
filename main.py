@@ -9,7 +9,7 @@ Database: MongoDB (IST Timezone)
 Bot Token: 8667282515:AAH_-_6LUawm4IwaEHPVx3igaf0LSMxs3xw
 Owner ID: 1073815732
 Admin Username: @Venompratap
-Welcome Bonus: 2 Points
+Welcome Bonus: 5 Points
 Referral Bonus: 2 Points
 Daily Bonus: 1 Point
 ===========================================
