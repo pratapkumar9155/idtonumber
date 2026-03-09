@@ -2,13 +2,13 @@
 ===========================================
 🤖 COMPLETE TELEGRAM BOT - ALL FEATURES WORKING
 ===========================================
-Developer: @VIP_X_OFFICIAL
+Developer: @Venompratap
 Version: 8.0 (FINAL)
 Features: 100+ Features Working
 Database: MongoDB (IST Timezone)
-Bot Token: 8432105036:AAF_hiRAwU7N2nCVWakv9pjb1zOT4yfc-zk
-Owner ID: 7459756974
-Admin Username: @VIP_X_OFFICIAL
+Bot Token: 8667282515:AAH_-_6LUawm4IwaEHPVx3igaf0LSMxs3xw
+Owner ID: 1073815732
+Admin Username: @Venompratap
 Welcome Bonus: 2 Points
 Referral Bonus: 2 Points
 Daily Bonus: 1 Point
@@ -42,11 +42,11 @@ from telegram.constants import ParseMode
 
 # ==================== CONFIGURATION ====================
 BOT_TOKEN = "8612834168:AAFT1VX35aEpyEOMoszHf2ymrr2R4iP3gvQ"
-MONGODB_URI = "mongodb+srv://nikilsaxena843_db_user:3gF2wyT4IjsFt0cY@vipbot.puv6gfk.mongodb.net/?appName=vipbot"
+MONGODB_URI = "mongodb+srv://venommusic:venom112@cluster0.tvf0tqz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 API_URL = "http://api.subhxcosmo.in/api"
 API_KEY = "suryanshHacker"
-OWNER_ID = 7459756974
-OWNER_USERNAME = "@VIP_X_OFFICIAL"  # Updated admin username
+OWNER_ID = 1073815732
+OWNER_USERNAME = "@Venompratap"  # Updated admin username
 
 # India Timezone
 IST = timezone('Asia/Kolkata')
@@ -207,7 +207,7 @@ LANG = {
         'insufficient_points': "❌ अपर्याप्त पॉइंट्स! आपके पास {} पॉइंट्स हैं।",
         
         # Search
-        'enter_id': "🆔 Telegram User ID दर्ज करें:\n\nउदाहरण: 7459756974",
+        'enter_id': "🆔 Telegram User ID दर्ज करें:\n\nउदाहरण: 1073815732",
         'invalid_id': "❌ अमान्य ID! केवल numbers दर्ज करें।",
         'processing': "⏳ प्रोसेसिंग... कृपया प्रतीक्षा करें।",
         'api_error': "❌ API त्रुटि! बाद में प्रयास करें।",
@@ -260,7 +260,7 @@ LANG = {
         'insufficient_points': "❌ Insufficient points! You have {} points.",
         
         # Search
-        'enter_id': "🆔 Enter Telegram User ID:\n\nExample: 7459756974",
+        'enter_id': "🆔 Enter Telegram User ID:\n\nExample: 1073815732",
         'invalid_id': "❌ Invalid ID! Enter numbers only.",
         'processing': "⏳ Processing... Please wait.",
         'api_error': "❌ API Error! Try again later.",
