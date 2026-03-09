@@ -41,7 +41,7 @@ from telegram.ext import (
 from telegram.constants import ParseMode
 
 # ==================== CONFIGURATION ====================
-BOT_TOKEN = "8612834168:AAFT1VX35aEpyEOMoszHf2ymrr2R4iP3gvQ"
+BOT_TOKEN = "8667282515:AAH_-_6LUawm4IwaEHPVx3igaf0LSMxs3xw"
 MONGODB_URI = "mongodb+srv://venommusic:venom112@cluster0.tvf0tqz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 API_URL = "http://api.subhxcosmo.in/api"
 API_KEY = "suryanshHacker"
