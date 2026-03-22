@@ -43,8 +43,9 @@ from telegram.constants import ParseMode
 # ==================== CONFIGURATION ====================
 BOT_TOKEN = "8667282515:AAH_-_6LUawm4IwaEHPVx3igaf0LSMxs3xw"
 MONGODB_URI = "mongodb+srv://venommusic:venom112@cluster0.tvf0tqz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-API_URL = "http://api.subhxcosmo.in/api"
-API_KEY = "suryanshHacker"
+# New API Configuration
+API_URL = "https://api-test-vip-835d081a6316.herokuapp.com/api/search"
+API_KEY = "98577049"
 OWNER_ID = 1073815732
 OWNER_USERNAME = "@Venompratap"  # Updated admin username
 
@@ -153,10 +154,12 @@ try:
             'created_at': datetime.now(IST)
         })
     else:
-        # Update existing settings with new values
+        # Update existing settings
         settings_col.update_one(
             {'key': 'bot_settings'},
             {'$set': {
+                'api_url': API_URL,
+                'api_key': API_KEY,
                 'referral_bonus': 2,
                 'daily_bonus': 1,
                 'welcome_bonus': 2
@@ -183,6 +186,7 @@ try:
     print(f"   🤝 Referral Bonus: 2 points")
     print(f"   🎁 Daily Bonus: 1 point")
     print(f"   👑 Admin Username: {OWNER_USERNAME}")
+    print(f"   🌐 API URL: {API_URL}")
     print("="*50)
     
 except Exception as e:
@@ -1094,7 +1098,7 @@ async def use_service(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return SEARCH_ID
 
 async def handle_search_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle Telegram ID input for search"""
+    """Handle Telegram ID input for search with new API"""
     user_id = update.effective_user.id
     lang = get_user_lang(user_id)
     target_id = update.message.text.strip()
@@ -1116,10 +1120,15 @@ async def handle_search_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     processing = await update.message.reply_text(LANG[lang]['processing'])
     
     try:
-        # Call API with Telegram ID
+        # Get settings for API
+        settings = settings_col.find_one({'key': 'bot_settings'})
+        api_url = settings.get('api_url', API_URL) if settings else API_URL
+        api_key = settings.get('api_key', API_KEY) if settings else API_KEY
+        
+        # Call new API with key and userid parameters
         response = requests.get(
-            API_URL,
-            params={'key': API_KEY, 'type': 'sms', 'term': target_id},
+            api_url,
+            params={'key': api_key, 'userid': target_id},
             timeout=30
         )
         
@@ -1127,67 +1136,90 @@ async def handle_search_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
             data = response.json()
             data = clean_api_response(data)
             
-            # Deduct points
-            new_balance = await deduct_points(user_id, 1, f"API Search for ID: {target_id}")
-            
-            if new_balance:
-                # Get target user info if exists
-                target_user = users_col.find_one({'user_id': target_id})
-                target_name = target_user.get('first_name', 'Unknown') if target_user else 'Not Registered'
+            # Check if API returned success
+            if data.get('success') or data.get('status') == 'success' or data.get('data'):
+                # Deduct points
+                new_balance = await deduct_points(user_id, 1, f"API Search for ID: {target_id}")
                 
-                # Get phone number from API response
-                phone_number = "Not Available"
-                country = "India"
-                country_code = "+91"
-                
-                if data.get('success') and data.get('result'):
-                    result = data['result']
-                    phone_number = result.get('number', 'Not Available')
-                    country = result.get('country', 'India')
-                    country_code = result.get('country_code', '+91')
-                
-                # Save to history
-                search_history_col.insert_one({
-                    'user_id': user_id,
-                    'target_id': target_id,
-                    'target_name': target_name,
-                    'phone_number': phone_number,
-                    'result': data,
-                    'timestamp': get_ist()
-                })
-                
-                # Update user stats
-                users_col.update_one(
-                    {'user_id': user_id},
-                    {'$inc': {'total_searches': 1}}
-                )
-                
-                # Format result
-                msg = LANG[lang]['search_result'].format(
-                    phone_number,
-                    target_id,
-                    target_name,
-                    country,
-                    country_code,
-                    format_number(new_balance),
-                    format_ist(get_ist())
-                )
-                
-                # Send result
-                result_msg = await update.message.reply_text(msg)
-                
-                # Add reaction
-                settings = settings_col.find_one({'key': 'bot_settings'})
-                if settings and settings.get('reactions_enabled', True):
-                    await add_reaction(result_msg)
-                
-                await processing.delete()
+                if new_balance:
+                    # Get target user info if exists
+                    target_user = users_col.find_one({'user_id': target_id})
+                    target_name = target_user.get('first_name', 'Unknown') if target_user else 'Not Registered'
+                    
+                    # Extract data from API response - handle different response formats
+                    phone_number = "Not Available"
+                    country = "India"
+                    country_code = "+91"
+                    
+                    # Try different response structures
+                    if data.get('result'):
+                        result = data['result']
+                        phone_number = result.get('number', result.get('phone', result.get('mobile', 'Not Available')))
+                        country = result.get('country', 'India')
+                        country_code = result.get('country_code', '+91')
+                    elif data.get('data'):
+                        result = data['data']
+                        phone_number = result.get('number', result.get('phone', result.get('mobile', 'Not Available')))
+                        country = result.get('country', 'India')
+                        country_code = result.get('country_code', '+91')
+                    elif data.get('phone'):
+                        phone_number = data.get('phone', 'Not Available')
+                        country = data.get('country', 'India')
+                        country_code = data.get('country_code', '+91')
+                    else:
+                        # If no specific structure, try to find any number in response
+                        for key in ['number', 'phone', 'mobile', 'phone_number']:
+                            if key in data:
+                                phone_number = data[key]
+                                break
+                    
+                    # Save to history
+                    search_history_col.insert_one({
+                        'user_id': user_id,
+                        'target_id': target_id,
+                        'target_name': target_name,
+                        'phone_number': phone_number,
+                        'result': data,
+                        'timestamp': get_ist()
+                    })
+                    
+                    # Update user stats
+                    users_col.update_one(
+                        {'user_id': user_id},
+                        {'$inc': {'total_searches': 1}}
+                    )
+                    
+                    # Format result
+                    msg = LANG[lang]['search_result'].format(
+                        phone_number,
+                        target_id,
+                        target_name,
+                        country,
+                        country_code,
+                        format_number(new_balance),
+                        format_ist(get_ist())
+                    )
+                    
+                    # Send result
+                    result_msg = await update.message.reply_text(msg)
+                    
+                    # Add reaction
+                    settings = settings_col.find_one({'key': 'bot_settings'})
+                    if settings and settings.get('reactions_enabled', True):
+                        await add_reaction(result_msg)
+                    
+                    await processing.delete()
+                else:
+                    await processing.edit_text("❌ Error deducting points!")
             else:
-                await processing.edit_text("❌ Error deducting points!")
+                # API returned error
+                error_msg = data.get('message', data.get('error', 'API Error'))
+                await processing.edit_text(f"❌ {error_msg}\n\n{LANG[lang]['api_error']}")
         else:
             await processing.edit_text(LANG[lang]['api_error'])
     
     except Exception as e:
+        print(f"API Error: {e}")
         await processing.edit_text(f"❌ Error: {str(e)}")
     
     return ConversationHandler.END
@@ -3045,12 +3077,16 @@ def main():
     print(f"   🤝 Referral Bonus: 2 points")
     print(f"   🎁 Daily Bonus: 1 point")
     print("="*50)
+    print("✅ API CONFIGURATION:")
+    print(f"   🌐 API URL: {API_URL}")
+    print(f"   🔑 API KEY: {API_KEY}")
+    print("="*50)
     print("✅ ALL FEATURES LOADED AND WORKING:")
     print("   ✓ User System")
     print("   ✓ Point System")
     print("   ✓ Purchase System")
     print("   ✓ Gift Code System")
-    print("   ✓ Telegram ID Search (Shows Phone Number!)")
+    print("   ✓ Telegram ID Search (Shows Phone Number via New API!)")
     print("   ✓ Referral System")
     print("   ✓ Daily Bonus")
     print("   ✓ Admin Panel (45+ features)")
