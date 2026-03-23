@@ -211,7 +211,7 @@ LANG = {
         'insufficient_points': "❌ अपर्याप्त पॉइंट्स! आपके पास {} पॉइंट्स हैं।",
         
         # Search
-        'enter_id': "🆔 Telegram User ID दर्ज करें:\n\nउदाहरण: 1073815732",
+        'enter_id': "🆔 Telegram User ID दर्ज करें:\n\nउदाहरण: 7459756974",
         'invalid_id': "❌ अमान्य ID! केवल numbers दर्ज करें।",
         'processing': "⏳ प्रोसेसिंग... कृपया प्रतीक्षा करें।",
         'api_error': "❌ API त्रुटि! बाद में प्रयास करें।",
@@ -264,7 +264,7 @@ LANG = {
         'insufficient_points': "❌ Insufficient points! You have {} points.",
         
         # Search
-        'enter_id': "🆔 Enter Telegram User ID:\n\nExample: 1073815732",
+        'enter_id': "🆔 Enter Telegram User ID:\n\nExample: 7459756974",
         'invalid_id': "❌ Invalid ID! Enter numbers only.",
         'processing': "⏳ Processing... Please wait.",
         'api_error': "❌ API Error! Try again later.",
